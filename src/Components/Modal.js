@@ -1,44 +1,85 @@
-import React, { useState } from 'react';
-import './Modal.css'
-export default function NewCustomer(props){
-    const [id,setId] = useState(0);
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [email, setEmail] = useState("");
-    const [address, setAddress] = useState("");
-    const [contact, setContact] = useState("");
-    const [landline, setLandline] = useState("");
-    const [isModal,setModal] = useState(false);
+import React,{useState}  from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import Modal from '@material-ui/core/Modal';
+import "./Modal.css"
+import axios from 'axios'
 
-    const onSubmit = (e) =>{
-        e.preventDefault();
-        const newObj = {
-            id: 2,
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            address: address,
-            contact: contact,
-            landline: landline,
-        }
-        props.create(newObj);
-        setId(0);
-        setFirstName("");
-        setLastName("");
-        setEmail("");
-        setAddress("");
-        setContact("");
-        setLandline("");
-        setModal(false);
+function rand() {
+  return Math.round(Math.random() * 20) - 10;
+}
+
+function getModalStyle() {
+  const top = 50 + rand();
+  const left = 50 + rand();
+
+  return {
+    top: `${top}%`,
+    left: `${left}%`,
+    transform: `translate(-${top}%, -${left}%)`,
+  };
+}
+
+
+
+export default function SimpleModal() {
+  
+  // getModalStyle is not a pure function, we roll the style only on the first render
+  const [modalStyle] = React.useState(getModalStyle);
+  const [open, setOpen] = React.useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [address, setAddress] = useState("");
+  const [contact, setContact] = useState("");
+  const [landline, setLandline] = useState("");
+  
+  const onSubmit = async(e) =>{
+    try{
+    e.preventDefault();
+    const newObj = {
+       
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        address: address,
+        contact: contact,
+        landline: landline,
     }
+    await axios.post("http://localhost:8080/customers/addCustomers",newObj,)
+    .then((res)=>{
+       console.log(res);
+      
+    }).catch((err)=>{
+      console.log(err.data);
+    })
+   
+    
+    setFirstName("");
+    setLastName("");
+    setEmail("");
+    setAddress("");
+    setContact("");
+    setLandline("");
+    handleClose()
+  }catch(err){
+    console.log(err);
+  }
+    
+}
 
+  const handleOpen = () => {
+    setOpen(true);
+  };
 
-    const DisplayModal = () => {
-        return (
-          <div className="modal-form">
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const body = (
+    <div className="modal-form">
                 <form onSubmit={onSubmit} className = "modal-container" >
                     <div className="close-btn">
-                        <div onClick={()=>setModal(false)}>
+                        <div onClick={handleClose}>
                             Close
                         </div>
                     </div>
@@ -90,17 +131,21 @@ export default function NewCustomer(props){
                 </form>
           
         </div>
-        
-        )
-      }
-    
-      return (
-        <>
-            <button className="addbtn" onClick = {(e)=>setModal(true)}> Create New Customer</button>
-         
-          {isModal && DisplayModal()}
-        </>
-      );
-    
+  );
 
+  return (
+    <div>
+      <button className="form-control btn" type="submit"  onClick={handleOpen}> 
+                                Add customer
+                        </button>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+      >
+        {body}
+      </Modal>
+    </div>
+  );
 }

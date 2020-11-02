@@ -5,7 +5,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import { BrowserRouter as Router, Route, Link, } from 'react-router-dom'
 import Home from './Components/Home'
 import Home2 from './ProductComponent/Components/Home'
-import NewCustomer from './Components/NewCustomer'
+
 
 function App() {
   return (

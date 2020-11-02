@@ -8,6 +8,9 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import axios from 'axios';
+import  Dotenv from "dotenv"
+import ModalEdit from './ModalEdit'
+import Axios from 'axios';
 
 const useStyles = makeStyles({
   table: {
@@ -15,6 +18,7 @@ const useStyles = makeStyles({
   },
 });
 
+Dotenv.config()
 
 
 /*const rows = [
@@ -29,15 +33,18 @@ export default function BasicTable() {
   const classes = useStyles();
   const [rows,setRows]=useState([])
   useEffect(()=>{
-    axios.get("localhost:8080/customers/getAllCustomers")
+    axios.get("http://localhost:8080/customers/getAllCustomers",)
     .then((res)=>{
-      console.log(res)
-      setRows(res.data)
+      console.log(res.data.con);
+       setRows(res.data.content);
     }).catch((err)=>{
-      console.log(err)
+      console.log(err.data);
     })
-  },)
+  
+   
+  },[])
   const handledelet=(event,id)=>{
+    event.preventDefault();
     const row1=rows.filter(item=>item.id!=id);
     setRows(row1)
   }
@@ -57,15 +64,19 @@ export default function BasicTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+        {rows.map((row) => (
             <TableRow key={row.id}>
               <TableCell component="th" scope="row">
                 {row.title}
               </TableCell>
-              <TableCell align="right">{row.firstName}</TableCell>
-              <TableCell align="right">{row.lastName}</TableCell>
-             
-              <button onClick={(event)=>handledelet(event,row.id)} style={{width:"80px",backgroundColor:"green",height:'40px'}}> Delete</button>
+              <TableCell>{row.firstName}</TableCell>
+              <TableCell>{row.lastName}</TableCell>
+              <TableCell>{row.email}</TableCell>
+              <TableCell>{row.address}</TableCell>
+              <TableCell>{row.contactNumber}</TableCell>
+              <TableCell>{row.landline}</TableCell>
+              <TableCell> <button onClick={(event)=>handledelet(event,row.id)} style={{width:"80px",backgroundColor:"green",height:'40px'}}> Delete</button></TableCell>
+              <ModalEdit firstName={row.firstName} lastName={row.lastName} email={row.email} adress={row.address} contact={row.contactNumber} landline={row.landline} />
             </TableRow>
           ))}
         </TableBody>
